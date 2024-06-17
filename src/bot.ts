@@ -208,15 +208,13 @@ bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
   console.log("--//---USER_NAME----//---", USER_NAME);
 
   try {
-    await axios
-      .post(`https://mike-token-backend-1.onrender.com/api/add`, {
-        username: USER_NAME,
-      })
-      .then(async() => {
-        await axios.post(
-          `https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${USER_NAME}`, { balance: 200}
-        );
-      });
+  
+    const response00 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/add`, {
+      username: USER_NAME,
+    });
+
+    const response0 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${USER_NAME}`, { balance: 200});
+    
     const response1 = await axios.post(
       `https://mike-token-backend-1.onrender.com/api/wallet/${referrerUsername}`
     );
