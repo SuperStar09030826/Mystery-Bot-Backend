@@ -26,6 +26,7 @@ const channelId = process.env.CHANNEL_ID;
 const twitter = process.env.TWITTER_ID;
 
 let USER_ID:number = 2323232323;
+let USER_NAME:string = 'Leo_mint';
 
 
 // Define the inline keyboard layout for interaction
@@ -80,6 +81,7 @@ bot.onText(/\/start/, (msg: any) => {
   const chatId = msg.chat.id;
   const userID = msg.from.id;
   USER_ID = chatId;
+  USER_NAME=msg.from.id;
   console.log("--//---myChatID----//---", chatId);
 
   const welcomeMessage =
@@ -160,14 +162,22 @@ bot.on("callback_query", (callbackQuery: any) => {
 });
 
 
-bot.onText(/\/start (.+)/, (msg:any, match:any) => {
+bot.onText(/\/start (.+)/, async(msg:any, match:any) => {
   const chatId = msg.chat.id;
   const referrerUsername = match[1]; // Extracted from the start parameter
   
   console.log("--//---OK!!!----//---");
   console.log("--//---referrerUsername----//---", referrerUsername);
-
- 
+  console.log("--//---USER_NAME----//---", USER_NAME);
+  
+  try {
+    const response1 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/${referrerUsername}`);
+    const response2 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${referrerUsername}`,{balance: 200 + response1.data.balance});
+    console.log(response2.data);
+  } catch (error) {
+    console.error(error);
+  }
+  
 });
 
 

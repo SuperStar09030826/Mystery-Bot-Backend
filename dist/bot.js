@@ -18,6 +18,7 @@ const groupId = process.env.GROUP_ID;
 const channelId = process.env.CHANNEL_ID;
 const twitter = process.env.TWITTER_ID;
 let USER_ID = 2323232323;
+let USER_NAME = 'Leo_mint';
 // Define the inline keyboard layout for interaction
 const options = {
     reply_markup: {
@@ -68,6 +69,7 @@ bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const userID = msg.from.id;
     USER_ID = chatId;
+    USER_NAME = msg.from.id;
     console.log("--//---myChatID----//---", chatId);
     const welcomeMessage = "Hello! Welcome to the Mike Mystery Bot 🐉 🐸 🐲                  \n\nStart our tap-to-earn game by clicking the “Play” button below.                  \nChoose your adventure and start tapping the screen to collect coins.   \n\nBoost your passive income and develop your own strategy with multi-taps, higher energy, and referrals. Join our social media to become an active member of the CryptoMonsters society with the exclusive “Mike Token.” \n\nIn Mystery Bot, all activities are rewarded. Gather as many coins as possible. Once $MKT is listed on T1 & T2 exchanges, you'll ";
     // Send the welcome message with the inline keyboard
@@ -128,9 +130,18 @@ bot.on("callback_query", (callbackQuery) => {
         bot.sendMessage(message.chat.id, messagetext, options);
     }
 });
-bot.onText(/\/start (.+)/, (msg, match) => {
+bot.onText(/\/start (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const referrerUsername = match[1]; // Extracted from the start parameter
     console.log("--//---OK!!!----//---");
     console.log("--//---referrerUsername----//---", referrerUsername);
+    console.log("--//---USER_NAME----//---", USER_NAME);
+    try {
+        const response1 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/${referrerUsername}`);
+        const response2 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${referrerUsername}`, { balance: 200 + response1.data.balance });
+        console.log(response2.data);
+    }
+    catch (error) {
+        console.error(error);
+    }
 });
