@@ -83,7 +83,7 @@ bot.onText(/\/start/, (msg: any) => {
   console.log("--//---myChatID----//---", chatId);
 
   const welcomeMessage =
-    "Hello! Welcome to Mike Game Bot 🐉 🐸 🐲                  \n\n You are now the director of a crypto exchange.                 \n\n Which one? You choose. Tap the screen, collect coins, pump up your passive income, develop your own income strategy.  \n\n We’ll definitely appreciate your efforts once the token is listed (the dates are coming soon). \n\n Don't forget about your friends — bring them to the game and get even more coins together!";
+    "Hello! Welcome to the Mike Mystery Bot 🐉 🐸 🐲                  \n\nStart our tap-to-earn game by clicking the “Play” button below.                  \nChoose your adventure and start tapping the screen to collect coins.   \n\nBoost your passive income and develop your own strategy with multi-taps, higher energy, and referrals. Join our social media to become an active member of the CryptoMonsters society with the exclusive “Mike Token.” \n\nIn Mystery Bot, all activities are rewarded. Gather as many coins as possible. Once $MKT is listed on T1 & T2 exchanges, you'll ";
 
   // Send the welcome message with the inline keyboard
   bot.sendMessage(chatId, welcomeMessage, options);
