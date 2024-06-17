@@ -14,11 +14,23 @@ console.log("Bot token:", token); // Confirm token is loaded
 // Create a new Telegram bot using polling to fetch new updates
 const bot = new TelegramBot(token, { polling: true });
 // Assign telegram channel id
-const groupId = process.env.GROUP_ID;
-const channelId = process.env.CHANNEL_ID;
+const groupUsername = process.env.GROUP_USERNAME;
+const channelUsername = process.env.CHANNEL_USERNAME;
 const twitter = process.env.TWITTER_ID;
+let groupId = 0;
+let channelID = 0;
+let twitterID = 0;
 let USER_ID = 2323232323;
-let USER_NAME = 'Leo_mint';
+let USER_NAME = "Leo_mint";
+bot
+    .getChat(groupUsername)
+    .then((chat) => {
+    groupId = chat.id;
+    console.log("Group ID:", groupId);
+})
+    .catch((error) => {
+    console.error("Error getting chat:", error);
+});
 // Define the inline keyboard layout for interaction
 const options = {
     reply_markup: {
@@ -69,15 +81,16 @@ bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const userID = msg.from.id;
     USER_ID = chatId;
-    USER_NAME = msg.from.id;
     console.log("--//---myChatID----//---", chatId);
     const welcomeMessage = "Hello! Welcome to the Mike Mystery Bot 🐉 🐸 🐲                  \n\nStart our tap-to-earn game by clicking the “Play” button below.                  \nChoose your adventure and start tapping the screen to collect coins.   \n\nBoost your passive income and develop your own strategy with multi-taps, higher energy, and referrals. Join our social media to become an active member of the CryptoMonsters society with the exclusive “Mike Token.” \n\nIn Mystery Bot, all activities are rewarded. Gather as many coins as possible. Once $MKT is listed on T1 & T2 exchanges, you'll ";
     // Send the welcome message with the inline keyboard
     bot.sendMessage(chatId, welcomeMessage, options);
 });
 bot.on("message", (msg) => {
+    var _a;
     const chatId = msg.chat.id;
     const userID = msg.from.id;
+    USER_NAME = (_a = msg.from) === null || _a === void 0 ? void 0 : _a.username;
     console.log("--//---myChatID----//---", chatId);
     console.log("--//---myUserID----//---", userID);
 });
@@ -98,28 +111,34 @@ bot.on("callback_query", (callbackQuery) => {
     if (category === "join") {
         console.log("--//---USER_ID----//---", USER_ID);
         // Check if the user is already joined group
-        bot.getChatMember(groupId, USER_ID).then((member) => {
-            if ((member.status !== "left") && (member.status !== "kicked")) {
+        bot
+            .getChatMember(groupId, USER_ID)
+            .then((member) => {
+            if (member.status !== "left" && member.status !== "kicked") {
                 bot.sendMessage(message.chat.id, "🏆  You gained 1000 coins!", option1);
             }
             else {
                 bot.sendMessage(message.chat.id, "🐷  You are not joined group!", option1);
             }
-        }).catch((error) => {
+        })
+            .catch((error) => {
             console.error("Error checking chat member:", error);
             bot.sendMessage(message.chat.id, "🦀  Error checking chat member!", option1);
         });
     }
     if (category === "subscribe") {
         // Check if the user is already subscribed chanel
-        bot.getChatMember(channelId, USER_ID).then((member) => {
-            if ((member.status !== "left") && (member.status !== "kicked")) {
+        bot
+            .getChatMember(channelID, USER_ID)
+            .then((member) => {
+            if (member.status !== "left" && member.status !== "kicked") {
                 bot.sendMessage(message.chat.id, "🏆  You gained 1000 coins!", option1);
             }
             else {
                 bot.sendMessage(message.chat.id, "🐷  You are not joined group!", option1);
             }
-        }).catch((error) => {
+        })
+            .catch((error) => {
             console.error("Error checking chat member:", error);
             bot.sendMessage(message.chat.id, "🦀  Error checking chat member!", option1);
         });
@@ -137,6 +156,13 @@ bot.onText(/\/start (.+)/, async (msg, match) => {
     console.log("--//---referrerUsername----//---", referrerUsername);
     console.log("--//---USER_NAME----//---", USER_NAME);
     try {
+        await axios
+            .post(`https://mike-token-backend-1.onrender.com/api/add`, {
+            username: USER_NAME,
+        })
+            .then(async () => {
+            await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${USER_NAME}`, { balance: 200 });
+        });
         const response1 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/${referrerUsername}`);
         const response2 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${referrerUsername}`, { balance: 200 + response1.data.balance });
         console.log(response2.data);

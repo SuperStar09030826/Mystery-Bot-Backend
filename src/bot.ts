@@ -21,13 +21,26 @@ console.log("Bot token:", token); // Confirm token is loaded
 const bot = new TelegramBot(token, { polling: true });
 
 // Assign telegram channel id
-const groupId = process.env.GROUP_ID;
-const channelId = process.env.CHANNEL_ID;
+const groupUsername = process.env.GROUP_USERNAME;
+const channelUsername = process.env.CHANNEL_USERNAME;
 const twitter = process.env.TWITTER_ID;
 
-let USER_ID:number = 2323232323;
-let USER_NAME:string = 'Leo_mint';
+let groupId: number = 0;
+let channelID: number = 0;
+let twitterID: number = 0;
 
+let USER_ID: number = 2323232323;
+let USER_NAME: string = "Leo_mint";
+
+bot
+  .getChat(groupUsername)
+  .then((chat: any) => {
+    groupId = chat.id;
+    console.log("Group ID:", groupId);
+  })
+  .catch((error: any) => {
+    console.error("Error getting chat:", error);
+  });
 
 // Define the inline keyboard layout for interaction
 const options = {
@@ -74,14 +87,14 @@ const option1 = {
       ],
     ],
   },
-}
+};
 
 // Handle the /start command
 bot.onText(/\/start/, (msg: any) => {
   const chatId = msg.chat.id;
   const userID = msg.from.id;
   USER_ID = chatId;
-  USER_NAME=msg.from.id;
+
   console.log("--//---myChatID----//---", chatId);
 
   const welcomeMessage =
@@ -91,20 +104,17 @@ bot.onText(/\/start/, (msg: any) => {
   bot.sendMessage(chatId, welcomeMessage, options);
 });
 
-
 bot.on("message", (msg: any) => {
   const chatId = msg.chat.id;
   const userID = msg.from.id;
+  USER_NAME = msg.from?.username;
 
   console.log("--//---myChatID----//---", chatId);
   console.log("--//---myUserID----//---", userID);
-
-  
 });
 
 // Handle callback queries from inline buttons
 bot.on("callback_query", (callbackQuery: any) => {
-
   const message = callbackQuery.message;
   const category = callbackQuery.data; // The 'callback_data' associated with the button pressed.
 
@@ -125,60 +135,97 @@ bot.on("callback_query", (callbackQuery: any) => {
   if (category === "join") {
     console.log("--//---USER_ID----//---", USER_ID);
     // Check if the user is already joined group
-    bot.getChatMember(groupId, USER_ID).then((member:any) => {
-      if((member.status !== "left") && (member.status !== "kicked")) {
-        bot.sendMessage(message.chat.id, "🏆  You gained 1000 coins!", option1);
-      } else {
-        bot.sendMessage(message.chat.id, "🐷  You are not joined group!", option1);
-      }
-    }). catch((error: any) => {
-      console.error("Error checking chat member:", error);
-      bot.sendMessage(message.chat.id, "🦀  Error checking chat member!", option1);
-    });
-    
+    bot
+      .getChatMember(groupId, USER_ID)
+      .then((member: any) => {
+        if (member.status !== "left" && member.status !== "kicked") {
+          bot.sendMessage(
+            message.chat.id,
+            "🏆  You gained 1000 coins!",
+            option1
+          );
+        } else {
+          bot.sendMessage(
+            message.chat.id,
+            "🐷  You are not joined group!",
+            option1
+          );
+        }
+      })
+      .catch((error: any) => {
+        console.error("Error checking chat member:", error);
+        bot.sendMessage(
+          message.chat.id,
+          "🦀  Error checking chat member!",
+          option1
+        );
+      });
   }
-  
+
   if (category === "subscribe") {
     // Check if the user is already subscribed chanel
-    bot.getChatMember(channelId, USER_ID).then((member:any) => {
-      if((member.status !== "left") && (member.status !== "kicked")) {
-        bot.sendMessage(message.chat.id, "🏆  You gained 1000 coins!", option1);
-      } else {
-        bot.sendMessage(message.chat.id, "🐷  You are not joined group!", option1);
-      }
-    }). catch((error: any) => {
-      console.error("Error checking chat member:", error);
-      bot.sendMessage(message.chat.id, "🦀  Error checking chat member!", option1);
-    });
+    bot
+      .getChatMember(channelID, USER_ID)
+      .then((member: any) => {
+        if (member.status !== "left" && member.status !== "kicked") {
+          bot.sendMessage(
+            message.chat.id,
+            "🏆  You gained 1000 coins!",
+            option1
+          );
+        } else {
+          bot.sendMessage(
+            message.chat.id,
+            "🐷  You are not joined group!",
+            option1
+          );
+        }
+      })
+      .catch((error: any) => {
+        console.error("Error checking chat member:", error);
+        bot.sendMessage(
+          message.chat.id,
+          "🦀  Error checking chat member!",
+          option1
+        );
+      });
   }
-  
+
   if (category === "follow") {
     // Replace 'URL_TO_CHANNEL' with your channel's URL
     const messagetext =
       "  😍 Follow our twitter!\n       https://twitter.com/MikeTokenio\n       You will receive 1000 coins \n\n";
     bot.sendMessage(message.chat.id, messagetext, options);
   }
-
 });
 
-
-bot.onText(/\/start (.+)/, async(msg:any, match:any) => {
+bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
   const chatId = msg.chat.id;
   const referrerUsername = match[1]; // Extracted from the start parameter
-  
+
   console.log("--//---OK!!!----//---");
   console.log("--//---referrerUsername----//---", referrerUsername);
   console.log("--//---USER_NAME----//---", USER_NAME);
-  
+
   try {
-    const response1 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/${referrerUsername}`);
-    const response2 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${referrerUsername}`,{balance: 200 + response1.data.balance});
+    await axios
+      .post(`https://mike-token-backend-1.onrender.com/api/add`, {
+        username: USER_NAME,
+      })
+      .then(async() => {
+        await axios.post(
+          `https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${USER_NAME}`, { balance: 200}
+        );
+      });
+    const response1 = await axios.post(
+      `https://mike-token-backend-1.onrender.com/api/wallet/${referrerUsername}`
+    );
+    const response2 = await axios.post(
+      `https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${referrerUsername}`,
+      { balance: 200 + response1.data.balance }
+    );
     console.log(response2.data);
   } catch (error) {
     console.error(error);
   }
-  
 });
-
-
-
