@@ -65,6 +65,9 @@ const options = {
 };
 
 const option1 = {
+  parse_mode: "HTML",
+  disable_web_page_preview: true,
+
   reply_markup: {
     inline_keyboard: [
       [
@@ -89,6 +92,30 @@ const option1 = {
   },
 };
 
+const options3 = {
+  parse_mode: "HTML",
+  disable_web_page_preview: true,
+
+  reply_markup: {
+    inline_keyboard: [
+      [
+        {
+          text: "Play in 1 click  🐉",
+          web_app: { url: "https://mike-coin-bot-1.vercel.app/" },
+        },
+      ],
+      [
+        {
+          text: "Subscribe to the channel  🐸",
+          url: "https://t.me/MikeTokenAnn",
+        },
+      ],
+      [{ text: "How to Earn 💰", callback_data: "earn" }],
+      [{ text: "Task 📝", callback_data: "task" }],
+    ],
+  },
+};
+
 // Handle the /start command
 bot.onText(/\/start/, (msg: any) => {
   const chatId = msg.chat.id;
@@ -98,7 +125,7 @@ bot.onText(/\/start/, (msg: any) => {
   console.log("--//---myChatID----//---", chatId);
 
   const welcomeMessage =
-    "Hello! Welcome to the Mike Mystery Bot 🐉 🐸 🐲                  \n\nStart our tap-to-earn game by clicking the “Play” button below.                  \nChoose your adventure and start tapping the screen to collect coins.   \n\nBoost your passive income and develop your own strategy with multi-taps, higher energy, and referrals. Join our social media to become an active member of the CryptoMonsters society with the exclusive “Mike Token.” \n\nIn Mystery Bot, all activities are rewarded. Gather as many coins as possible. Once $MKT is listed on T1 & T2 exchanges, you'll ";
+    "Hello! Welcome to the Mike Mystery Bot 🐉 🐸 🐲                  \n\nStart our tap-to-earn game by clicking the “Play” button below. Choose your adventure and start tapping the screen to collect coins.   \n\nBoost your passive income and develop your own strategy with multi-taps, higher energy, and referrals. Join our social media to become an active member of the CryptoMonsters society with the exclusive “Mike Token.” \n\nIn Mystery Bot, all activities are rewarded. Gather as many coins as possible. Once $MKT is listed on T1 & T2 exchanges, you'll ";
 
   // Send the welcome message with the inline keyboard
   bot.sendMessage(chatId, welcomeMessage, options);
@@ -121,8 +148,10 @@ bot.on("callback_query", (callbackQuery: any) => {
   if (category === "earn") {
     // Replace 'URL_TO_CHANNEL' with your channel's URL
     const messagetext =
-      "How to play Mike Game ⚡️                              \n\n 💰 Tap to earn\nTap the screen and collect coins.\n\n    ⛏ Mine\nUpgrade cards that will give you passive income opportunities.\n\n  ⏰ Profit per hour\nThe exchange will work for you on its own, even when you are \nnot in the game for 3 hours.\nThen you need to log in to the game again.     \n\n     👥 Friends\nInvite your friends and you will get bonuses. Help a friend move \nto the next leagues and you will get even more bonuses.  \n\n⏳ Token listingAt the end of the season, a token will be released and distributed among the players. Dates will be announced in our announcement channel. Stay tuned!  ";
-    bot.sendMessage(message.chat.id, messagetext, options);
+      "How to play Monster Mystery Bot⚡️                              \n\n 💰 Tap to Earn \n\nTap the screen and collect coins. These coins will be exchanged to $MKT at the end of the event.  \n\n  ⛏ Mine\n\nUpgrade your status by buying special NFTs that will give you higher passive income opportunities (coming soon).  \n\n ⏰ Profit Per Hour \n\nThe bot itself as well as your status will work for you and mine more coins while you are away!  \n\nNote: You need to log in to the game again once in a while. \n\n  👥 Friends & Family \n\nInvite your friends and family and you will get bonuses. Help a friend move to the higher levels and you will get even more bonuses. \n\n⏳ Token Listings (top 10 exchanges only) \n\nAt the end of the event, $MKT tokens will be airdropped and distributed among the players. MKT is already transferable and tradable. You can buy, sell or stake in our website to earn even more! You can buy Mike Token ($MKT) at the below exchanges right now: \n\nhttps://pancakeswap.finance/swap?outputCurrency=0xF542aC438CF8Cd4477A1fc7aB88ADDA5426d55Ed\n\nhttps://m.indoex.io/orderbookmobile/MKT_USDT \n\n📑 MKT Contract Address:\n\n0xF542aC438CF8Cd4477A1fc7aB88ADDA5426d55Ed\n\nThe exact date of T1 & T2 Exchange listings will be announced in our announcement channel.\n\nHave fun and enjoy earning! 💰💰";
+    // Options to disable web page preview
+  
+    bot.sendMessage(message.chat.id, messagetext, options3);
   }
 
   if (category === "task") {
