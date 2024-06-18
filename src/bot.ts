@@ -237,6 +237,11 @@ bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
   console.log("--//---USER_NAME----//---", USER_NAME);
 
   try {
+
+    await axios.post(`https://mike-token-backend-1.onrender.com/api/friend/add`, {
+      username: referrerUsername,
+      friend: USER_NAME,
+    });
   
     const response00 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/add`, {
       username: USER_NAME,
@@ -251,6 +256,7 @@ bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
       `https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${referrerUsername}`,
       { balance: 200 + response1.data.balance }
     );
+
     console.log(response2.data);
   } catch (error) {
     console.error(error);
