@@ -1,2 +1,3 @@
 #                               Tap To Earn Game
-![MikeToken Telegram Game Bot](/assets/First page.png)
+![MikeToken Telegram Game Bot](/assets/First%20page.png)
+
