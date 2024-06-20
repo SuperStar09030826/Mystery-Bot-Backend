@@ -138,12 +138,27 @@ bot.on("callback_query", (callbackQuery) => {
         // Check if the user is already joined group
         bot
             .getChatMember(groupId, USER_ID)
-            .then((member) => {
+            .then(async (member) => {
             if (member.status !== "left" && member.status !== "kicked") {
-                bot.sendMessage(message.chat.id, "🏆  You gained 1000 coins!", option1);
+                bot.sendMessage(message.chat.id, "🏆  You will gain 1000 coins in app-task!", option1);
+                try {
+                    await axios
+                        .post(`https://mike-token-backend-1.onrender.com/api/earnings/add`, {
+                        username: USER_NAME,
+                    })
+                        .then(() => {
+                        axios.post(`https://mike-token-backend-1.onrender.com/api/earnings/update/joinTelegram/${USER_NAME}`, {
+                            status: true,
+                            earned: false,
+                        });
+                    });
+                }
+                catch (error) {
+                    console.error("Error:", error);
+                }
             }
             else {
-                bot.sendMessage(message.chat.id, "🐷  You are not joined group!", option1);
+                bot.sendMessage(message.chat.id, "🐷  You are not in a group!", option1);
             }
         })
             .catch((error) => {
@@ -155,12 +170,27 @@ bot.on("callback_query", (callbackQuery) => {
         // Check if the user is already subscribed chanel
         bot
             .getChatMember(channelID, USER_ID)
-            .then((member) => {
+            .then(async (member) => {
             if (member.status !== "left" && member.status !== "kicked") {
-                bot.sendMessage(message.chat.id, "🏆  You gained 1000 coins!", option1);
+                bot.sendMessage(message.chat.id, "🏆  You will gain 1000 coins in app-task!", option1);
+                try {
+                    await axios
+                        .post(`https://mike-token-backend-1.onrender.com/api/earnings/add`, {
+                        username: USER_NAME,
+                    })
+                        .then(() => {
+                        axios.post(`https://mike-token-backend-1.onrender.com/api/earnings/update/subscribeTelegram/${USER_NAME}`, {
+                            status: true,
+                            earned: false,
+                        });
+                    });
+                }
+                catch (error) {
+                    console.error("Error:", error);
+                }
             }
             else {
-                bot.sendMessage(message.chat.id, "🐷  You are not joined group!", option1);
+                bot.sendMessage(message.chat.id, "🐷  You are not in a group!", option1);
             }
         })
             .catch((error) => {
@@ -172,6 +202,26 @@ bot.on("callback_query", (callbackQuery) => {
         // Replace 'URL_TO_CHANNEL' with your channel's URL
         const messagetext = "  😍 Follow our twitter!\n       https://twitter.com/MikeTokenio\n       You will receive 1000 coins \n\n";
         bot.sendMessage(message.chat.id, messagetext, options);
+        // try {
+        //   await axios
+        //     .post(
+        //       `https://mike-token-backend-1.onrender.com/api/earnings/add`,
+        //       {
+        //         username: USER_NAME,
+        //       }
+        //     )
+        //     .then(() => {
+        //       axios.post(
+        //         `https://mike-token-backend-1.onrender.com/api/earnings/update/subscribeTelegram/${USER_NAME}`,
+        //         {
+        //           status: true,
+        //           earned: false,
+        //         }
+        //       );
+        //     });
+        // } catch (error) {
+        //   console.error("Error:", error);
+        // } 
     }
 });
 bot.onText(/\/start (.+)/, async (msg, match) => {

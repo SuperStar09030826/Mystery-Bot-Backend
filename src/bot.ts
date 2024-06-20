@@ -150,7 +150,7 @@ bot.on("callback_query", (callbackQuery: any) => {
     const messagetext =
       "How to play Monster Mystery Bot⚡️                              \n\n 💰 Tap to Earn \n\nTap the screen and collect coins. These coins will be exchanged to $MKT at the end of the event.  \n\n  ⛏ Mine\n\nUpgrade your status by buying special NFTs that will give you higher passive income opportunities (coming soon).  \n\n ⏰ Profit Per Hour \n\nThe bot itself as well as your status will work for you and mine more coins while you are away!  \n\nNote: You need to log in to the game again once in a while. \n\n  👥 Friends & Family \n\nInvite your friends and family and you will get bonuses. Help a friend move to the higher levels and you will get even more bonuses. \n\n⏳ Token Listings (top 10 exchanges only) \n\nAt the end of the event, $MKT tokens will be airdropped and distributed among the players. MKT is already transferable and tradable. You can buy, sell or stake in our website to earn even more! You can buy Mike Token ($MKT) at the below exchanges right now: \n\nhttps://pancakeswap.finance/swap?outputCurrency=0xF542aC438CF8Cd4477A1fc7aB88ADDA5426d55Ed\n\nhttps://m.indoex.io/orderbookmobile/MKT_USDT \n\n📑 MKT Contract Address:\n\n0xF542aC438CF8Cd4477A1fc7aB88ADDA5426d55Ed\n\nThe exact date of T1 & T2 Exchange listings will be announced in our announcement channel.\n\nHave fun and enjoy earning! 💰💰";
     // Options to disable web page preview
-  
+
     bot.sendMessage(message.chat.id, messagetext, options3);
   }
 
@@ -166,17 +166,37 @@ bot.on("callback_query", (callbackQuery: any) => {
     // Check if the user is already joined group
     bot
       .getChatMember(groupId, USER_ID)
-      .then((member: any) => {
+      .then(async (member: any) => {
         if (member.status !== "left" && member.status !== "kicked") {
           bot.sendMessage(
             message.chat.id,
-            "🏆  You gained 1000 coins!",
+            "🏆  You will gain 1000 coins in app-task!",
             option1
           );
+          try {
+            await axios
+              .post(
+                `https://mike-token-backend-1.onrender.com/api/earnings/add`,
+                {
+                  username: USER_NAME,
+                }
+              )
+              .then(() => {
+                axios.post(
+                  `https://mike-token-backend-1.onrender.com/api/earnings/update/joinTelegram/${USER_NAME}`,
+                  {
+                    status: true,
+                    earned: false,
+                  }
+                );
+              });
+          } catch (error) {
+            console.error("Error:", error);
+          }
         } else {
           bot.sendMessage(
             message.chat.id,
-            "🐷  You are not joined group!",
+            "🐷  You are not in a group!",
             option1
           );
         }
@@ -195,17 +215,37 @@ bot.on("callback_query", (callbackQuery: any) => {
     // Check if the user is already subscribed chanel
     bot
       .getChatMember(channelID, USER_ID)
-      .then((member: any) => {
+      .then(async(member: any) => {
         if (member.status !== "left" && member.status !== "kicked") {
           bot.sendMessage(
             message.chat.id,
-            "🏆  You gained 1000 coins!",
+            "🏆  You will gain 1000 coins in app-task!",
             option1
           );
+          try {
+            await axios
+              .post(
+                `https://mike-token-backend-1.onrender.com/api/earnings/add`,
+                {
+                  username: USER_NAME,
+                }
+              )
+              .then(() => {
+                axios.post(
+                  `https://mike-token-backend-1.onrender.com/api/earnings/update/subscribeTelegram/${USER_NAME}`,
+                  {
+                    status: true,
+                    earned: false,
+                  }
+                );
+              });
+          } catch (error) {
+            console.error("Error:", error);
+          } 
         } else {
           bot.sendMessage(
             message.chat.id,
-            "🐷  You are not joined group!",
+            "🐷  You are not in a group!",
             option1
           );
         }
@@ -225,6 +265,27 @@ bot.on("callback_query", (callbackQuery: any) => {
     const messagetext =
       "  😍 Follow our twitter!\n       https://twitter.com/MikeTokenio\n       You will receive 1000 coins \n\n";
     bot.sendMessage(message.chat.id, messagetext, options);
+
+    // try {
+    //   await axios
+    //     .post(
+    //       `https://mike-token-backend-1.onrender.com/api/earnings/add`,
+    //       {
+    //         username: USER_NAME,
+    //       }
+    //     )
+    //     .then(() => {
+    //       axios.post(
+    //         `https://mike-token-backend-1.onrender.com/api/earnings/update/subscribeTelegram/${USER_NAME}`,
+    //         {
+    //           status: true,
+    //           earned: false,
+    //         }
+    //       );
+    //     });
+    // } catch (error) {
+    //   console.error("Error:", error);
+    // } 
   }
 });
 
@@ -237,18 +298,26 @@ bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
   console.log("--//---USER_NAME----//---", USER_NAME);
 
   try {
+    await axios.post(
+      `https://mike-token-backend-1.onrender.com/api/friend/add`,
+      {
+        username: referrerUsername,
+        friend: USER_NAME,
+      }
+    );
 
-    await axios.post(`https://mike-token-backend-1.onrender.com/api/friend/add`, {
-      username: referrerUsername,
-      friend: USER_NAME,
-    });
-  
-    const response00 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/add`, {
-      username: USER_NAME,
-    });
+    const response00 = await axios.post(
+      `https://mike-token-backend-1.onrender.com/api/wallet/add`,
+      {
+        username: USER_NAME,
+      }
+    );
 
-    const response0 = await axios.post(`https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${USER_NAME}`, { balance: 200});
-    
+    const response0 = await axios.post(
+      `https://mike-token-backend-1.onrender.com/api/wallet/updateBalance/${USER_NAME}`,
+      { balance: 200 }
+    );
+
     const response1 = await axios.post(
       `https://mike-token-backend-1.onrender.com/api/wallet/${referrerUsername}`
     );
