@@ -110,7 +110,7 @@ const options3 = {
           url: "https://t.me/MikeTokenAnn",
         },
       ],
-      [{ text: "How to Earn 💰", callback_data: "earn" }],
+      [{ text: "Tap to Earn 💰", callback_data: "earn" }],
       [{ text: "Task 📝", callback_data: "task" }],
     ],
   },
