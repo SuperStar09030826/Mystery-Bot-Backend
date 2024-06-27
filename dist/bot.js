@@ -20,8 +20,9 @@ const twitter = process.env.TWITTER_ID;
 let groupId = 0;
 let channelID = 0;
 let twitterID = 0;
-let USER_ID = 2323232323;
+// let USER_ID: number = 2323232323;
 let USER_NAME = "Leo_mint";
+let chatId = 0;
 bot
     .getChat(groupUsername)
     .then((chat) => {
@@ -95,16 +96,16 @@ const options3 = {
                     url: "https://t.me/MikeTokenAnn",
                 },
             ],
-            [{ text: "How to Earn 💰", callback_data: "earn" }],
+            [{ text: "Tap to Earn 💰", callback_data: "earn" }],
             [{ text: "Task 📝", callback_data: "task" }],
         ],
     },
 };
 // Handle the /start command
 bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
+    chatId = msg.chat.id;
     const userID = msg.from.id;
-    USER_ID = chatId;
+    // USER_ID = chatId;
     console.log("--//---myChatID----//---", chatId);
     const welcomeMessage = "Hello! Welcome to the Mike Mystery Bot 🐉 🐸 🐲                  \n\nStart our tap-to-earn game by clicking the “Play” button below. Choose your adventure and start tapping the screen to collect coins.   \n\nBoost your passive income and develop your own strategy with multi-taps, higher energy, and referrals. Join our social media to become an active member of the CryptoMonsters society with the exclusive “Mike Token.” \n\nIn Mystery Bot, all activities are rewarded. Gather as many coins as possible. Once $MKT is listed on T1 & T2 exchanges, you'll ";
     // Send the welcome message with the inline keyboard
@@ -112,7 +113,7 @@ bot.onText(/\/start/, (msg) => {
 });
 bot.on("message", (msg) => {
     var _a;
-    const chatId = msg.chat.id;
+    chatId = msg.chat.id;
     const userID = msg.from.id;
     USER_NAME = (_a = msg.from) === null || _a === void 0 ? void 0 : _a.username;
     console.log("--//---myChatID----//---", chatId);
@@ -120,6 +121,7 @@ bot.on("message", (msg) => {
 });
 // Handle callback queries from inline buttons
 bot.on("callback_query", (callbackQuery) => {
+    const USER_ID = chatId;
     const message = callbackQuery.message;
     const category = callbackQuery.data; // The 'callback_data' associated with the button pressed.
     if (category === "earn") {

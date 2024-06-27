@@ -29,8 +29,9 @@ let groupId: number = 0;
 let channelID: number = 0;
 let twitterID: number = 0;
 
-let USER_ID: number = 2323232323;
+// let USER_ID: number = 2323232323;
 let USER_NAME: string = "Leo_mint";
+let chatId: number = 0;
 
 bot
   .getChat(groupUsername)
@@ -118,9 +119,9 @@ const options3 = {
 
 // Handle the /start command
 bot.onText(/\/start/, (msg: any) => {
-  const chatId = msg.chat.id;
+  chatId = msg.chat.id;
   const userID = msg.from.id;
-  USER_ID = chatId;
+  // USER_ID = chatId;
 
   console.log("--//---myChatID----//---", chatId);
 
@@ -132,7 +133,7 @@ bot.onText(/\/start/, (msg: any) => {
 });
 
 bot.on("message", (msg: any) => {
-  const chatId = msg.chat.id;
+  chatId = msg.chat.id;
   const userID = msg.from.id;
   USER_NAME = msg.from?.username;
 
@@ -142,6 +143,7 @@ bot.on("message", (msg: any) => {
 
 // Handle callback queries from inline buttons
 bot.on("callback_query", (callbackQuery: any) => {
+  const USER_ID = chatId;
   const message = callbackQuery.message;
   const category = callbackQuery.data; // The 'callback_data' associated with the button pressed.
 
