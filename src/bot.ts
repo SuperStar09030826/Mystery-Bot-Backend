@@ -160,7 +160,7 @@ bot.on("callback_query", (callbackQuery: any) => {
     // Replace 'URL_TO_CHANNEL' with your channel's URL
     const messagetext =
       "   😊   You will gain bonus!  🚀                    \n\n 😎  Join Mike's telegram group  \n       https://t.me/MikeToken \n       You will receive 1000 coins \n\n 🤩  Join Mike's Ann Channel  \n       https://t.me/MikeTokenAnn \n       You will receive 1000 coins \n\n  😍  Follow our twitter!\n       https://twitter.com/MikeTokenio\n       You will receive 1000 coins \n\n";
-    bot.sendMessage(message.chat.id, messagetext, option1);
+    bot.sendMessage(message.chat.id, messagetext, options);
   }
 
   if (category === "join") {
