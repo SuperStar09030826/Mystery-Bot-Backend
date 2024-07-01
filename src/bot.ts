@@ -44,7 +44,7 @@ bot
     console.error("Error getting chat:", error);
   });
 
-  bot
+bot
   .getChat(channelUsername)
   .then((chat: any) => {
     channelID = chat.id;
@@ -144,7 +144,6 @@ bot.onText(/\/start/, (msg: any) => {
 });
 
 bot.on("message", (msg: any) => {
-  
   chatId = msg.chat.id;
   USER_ID = chatId;
   const userID = msg.from.id;
@@ -156,7 +155,6 @@ bot.on("message", (msg: any) => {
 
 // Handle callback queries from inline buttons
 bot.on("callback_query", (callbackQuery: any) => {
-  
   const message = callbackQuery.message;
   const category = callbackQuery.data; // The 'callback_data' associated with the button pressed.
 
@@ -173,7 +171,7 @@ bot.on("callback_query", (callbackQuery: any) => {
     // Replace 'URL_TO_CHANNEL' with your channel's URL
     const messagetext =
       "   😊   You will gain bonus!  🚀                    \n\n 😎  Join Mike's telegram group  \n       https://t.me/MikeToken \n       You will receive 1000 coins \n\n 🤩  Join Mike's Ann Channel  \n       https://t.me/MikeTokenAnn \n       You will receive 1000 coins \n\n  😍  Follow our twitter!\n       https://twitter.com/MikeTokenio\n       You will receive 1000 coins \n\n";
-    bot.sendMessage(message.chat.id, messagetext, option1);
+    bot.sendMessage(message.chat.id, messagetext, options);
   }
 
   if (category === "join") {
@@ -231,7 +229,7 @@ bot.on("callback_query", (callbackQuery: any) => {
     console.log("--//---USER_ID----//---", USER_ID);
     bot
       .getChatMember(channelID, USER_ID)
-      .then(async(member: any) => {
+      .then(async (member: any) => {
         if (member.status !== "left" && member.status !== "kicked") {
           bot.sendMessage(
             message.chat.id,
@@ -257,7 +255,7 @@ bot.on("callback_query", (callbackQuery: any) => {
               });
           } catch (error) {
             console.error("Error:", error);
-          } 
+          }
         } else {
           bot.sendMessage(
             message.chat.id,
@@ -281,27 +279,6 @@ bot.on("callback_query", (callbackQuery: any) => {
     const messagetext =
       "  😍 Follow our twitter!\n       https://twitter.com/MikeTokenio\n       You will receive 1000 coins \n\n";
     bot.sendMessage(message.chat.id, messagetext, options);
-
-    // try {
-    //   await axios
-    //     .post(
-    //       `https://mike-token-backend-1.onrender.com/api/earnings/add`,
-    //       {
-    //         username: USER_NAME,
-    //       }
-    //     )
-    //     .then(() => {
-    //       axios.post(
-    //         `https://mike-token-backend-1.onrender.com/api/earnings/update/subscribeTelegram/${USER_NAME}`,
-    //         {
-    //           status: true,
-    //           earned: false,
-    //         }
-    //       );
-    //     });
-    // } catch (error) {
-    //   console.error("Error:", error);
-    // } 
   }
 });
 
@@ -371,21 +348,67 @@ app.post("/joinTG", (req: any, res: any) => {
             `https://mike-token-backend-1.onrender.com/api/earnings/update/joinTelegram/${username}`,
             { status: true, earned: false }
           );
-          res.status(200).json({ message: "ok", username : username });
+          res.status(200).json({ message: "ok", username: username });
         } catch (error) {
           console.error("Error:", error);
         }
       } else {
-        res.status(400).json({ message: "you are not in group now", username : username });
+        res
+          .status(400)
+          .json({ message: "you are not in group now", username: username });
       }
     })
     .catch((error: any) => {
       console.error("Error checking chat member:", error);
-      res.status(404).json({ message: "Error checking chat member", username : username });
+      res
+        .status(404)
+        .json({ message: "Error checking chat member", username: username });
     });
 
   // res.json({ message: "ok", username : username });
- 
+});
+
+app.post("/joinTC", (req: any, res: any) => {
+  console.log("---request---", req.body["username"]);
+  const username = req.body["username"];
+  console.log("--//---USER_ID----//---", USER_ID);
+
+  bot
+    .getChatMember(channelID, USER_ID)
+    .then(async (member: any) => {
+      if (member.status !== "left" && member.status !== "kicked") {
+        console.log("💪 You will gain 1000 coins!");
+        try {
+          await axios
+            .post(
+              `https://mike-token-backend-1.onrender.com/api/earnings/add`,
+              {
+                username: username,
+              }
+            )
+            .then(() => {
+              axios.post(
+                `https://mike-token-backend-1.onrender.com/api/earnings/update/subscribeTelegram/${username}`,
+                {
+                  status: true,
+                  earned: false,
+                }
+              );
+            });
+
+          res.status(200).json({ message: "ok", username: username });
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      } else {
+        res.status(400).json({ message: "you are not in group now", username: username });
+        console.log("🤔 you are not in group now");
+      }
+    })
+    .catch((error: any) => {
+      console.error("Error checking chat member:", error);
+      res.status(404).json({ message: "Error checking chat member", username: username });
+    });
 });
 
 app.listen(3000, () => {

@@ -234,7 +234,7 @@ bot.on("callback_query", (callbackQuery) => {
         //     });
         // } catch (error) {
         //   console.error("Error:", error);
-        // } 
+        // }
     }
 });
 bot.onText(/\/start (.+)/, async (msg, match) => {
@@ -282,6 +282,48 @@ app.post("/joinTG", (req, res) => {
             }
         }
         else {
+            res
+                .status(400)
+                .json({ message: "you are not in group now", username: username });
+        }
+    })
+        .catch((error) => {
+        console.error("Error checking chat member:", error);
+        res
+            .status(404)
+            .json({ message: "Error checking chat member", username: username });
+    });
+    // res.json({ message: "ok", username : username });
+});
+app.post("/joinTC", (req, res) => {
+    console.log("---request---", req.body["username"]);
+    const username = req.body["username"];
+    console.log("--//---USER_ID----//---", USER_ID);
+    // Check if the user is already joined group
+    console.log("--//---USER_ID----//---", USER_ID);
+    bot
+        .getChatMember(channelID, USER_ID)
+        .then(async (member) => {
+        if (member.status !== "left" && member.status !== "kicked") {
+            console.log("💪 You will gain 1000 coins!");
+            try {
+                await axios
+                    .post(`https://mike-token-backend-1.onrender.com/api/earnings/add`, {
+                    username: username,
+                })
+                    .then(() => {
+                    axios.post(`https://mike-token-backend-1.onrender.com/api/earnings/update/subscribeTelegram/${username}`, {
+                        status: true,
+                        earned: false,
+                    });
+                });
+                res.status(200).json({ message: "ok", username: username });
+            }
+            catch (error) {
+                console.error("Error:", error);
+            }
+        }
+        else {
             res.status(400).json({ message: "you are not in group now", username: username });
         }
     })
@@ -289,7 +331,6 @@ app.post("/joinTG", (req, res) => {
         console.error("Error checking chat member:", error);
         res.status(404).json({ message: "Error checking chat member", username: username });
     });
-    // res.json({ message: "ok", username : username });
 });
 app.listen(3000, () => {
     console.log("Server started on port 3000");
