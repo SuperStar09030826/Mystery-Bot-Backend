@@ -8,9 +8,10 @@ const TelegramBot = require("node-telegram-bot-api");
 const dotenv = require("dotenv");
 const axios = require("axios");
 const express = require("express");
+// const http = require('http');
 
 // Create a new Express app
-const app = express();
+// const app = express();
 // Load environment variables
 dotenv.config();
 
@@ -29,7 +30,7 @@ let groupId: number = 0;
 let channelID: number = 0;
 let twitterID: number = 0;
 
-// let USER_ID: number = 2323232323;
+let USER_ID: number = 0;
 let USER_NAME: string = "Leo_mint";
 let chatId: number = 0;
 
@@ -143,7 +144,7 @@ bot.on("message", (msg: any) => {
 
 // Handle callback queries from inline buttons
 bot.on("callback_query", (callbackQuery: any) => {
-  const USER_ID = chatId;
+  USER_ID = chatId;
   const message = callbackQuery.message;
   const category = callbackQuery.data; // The 'callback_data' associated with the button pressed.
 
@@ -332,4 +333,58 @@ bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
   } catch (error) {
     console.error(error);
   }
+});
+
+const app = express();
+
+app.use(express.json());
+
+app.post("/webhook", (req: any, res: any) => {
+  console.log("---request---", req.body["username"]);
+  const username = req.body["username"];
+  
+  // Check if the user is already joined group
+  bot
+    .getChatMember(groupId, USER_ID)
+    .then(async (member: any) => {
+      if (member.status !== "left" && member.status !== "kicked") {
+        bot.sendMessage(
+          chatId,
+          "🏆  You will gain 1000 coins in app-task!",
+          option1
+        );
+        try {
+          await axios.post(
+            `https://mike-token-backend-1.onrender.com/api/earnings/add`,
+            { username: username }
+          );
+          axios.post(
+            `https://mike-token-backend-1.onrender.com/api/earnings/update/joinTelegram/${username}`,
+            { status: true, earned: false }
+          );
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      } else {
+        bot.sendMessage(
+          chatId,
+          "🐷  You are not in a group!",
+          option1
+        );
+      }
+    })
+    .catch((error: any) => {
+      console.error("Error checking chat member:", error);
+      bot.sendMessage(
+        chatId,
+        "🦀  Error checking chat member!",
+        option1
+      );
+    });
+  res.json({ message: "ok", username : username });
+ 
+});
+
+app.listen(3000, () => {
+  console.log("Server started on port 3000");
 });
