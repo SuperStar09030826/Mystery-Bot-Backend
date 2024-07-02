@@ -8,6 +8,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const dotenv = require("dotenv");
 const axios = require("axios");
 const express = require("express");
+const cors = require("cors");
 // const http = require('http');
 
 // Create a new Express app
@@ -156,7 +157,7 @@ bot.on("message", (msg: any) => {
   if (msg.chat.id === groupId && msg.from.id === userID) {
     console.log(`User ${msg.from.username} (ID: ${msg.from.id}) posted a message in the group.`);
     // Here, you can do something with the message, like logging or sending a confirmation
-    bot.sendMessage(msg.chat.id, "Confirmed: User of interest has posted a message.");
+    bot.sendMessage(msg.chat.id, `User ${msg.from.username} posted a message in the group.`);
   }
 });
 
@@ -227,8 +228,9 @@ bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
 });
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
+
 
 app.post("/joinTG", (req: any, res: any) => {
   console.log("---request---", req.body["username"]);
