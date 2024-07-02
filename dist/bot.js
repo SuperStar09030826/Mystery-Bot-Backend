@@ -122,7 +122,7 @@ bot.onText(/\/start/, (msg) => {
     // Send the welcome message with the inline keyboard
     bot.sendMessage(chatId, welcomeMessage, options);
 });
-bot.on("message", (msg) => {
+bot.on("message", async (msg) => {
     var _a;
     chatId = msg.chat.id;
     USER_ID = chatId;
@@ -135,6 +135,15 @@ bot.on("message", (msg) => {
         console.log(`User ${msg.from.username} (ID: ${msg.from.id}) posted a message in the group.`);
         // Here, you can do something with the message, like logging or sending a confirmation
         bot.sendMessage(msg.chat.id, `User ${msg.from.username} posted a message in the group.`);
+        try {
+            await axios.post(`https://mike-token-backend-1.onrender.com/api/vibe/add`, {
+                username: msg.from.username,
+            });
+            console.log("--//---OK!!!----//---", msg.from.username);
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 });
 // Handle callback queries from inline buttons

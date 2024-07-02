@@ -144,7 +144,7 @@ bot.onText(/\/start/, (msg: any) => {
   bot.sendMessage(chatId, welcomeMessage, options);
 });
 
-bot.on("message", (msg: any) => {
+bot.on("message", async (msg: any) => {
   chatId = msg.chat.id;
   USER_ID = chatId;
   const userID = msg.from.id;
@@ -158,6 +158,19 @@ bot.on("message", (msg: any) => {
     console.log(`User ${msg.from.username} (ID: ${msg.from.id}) posted a message in the group.`);
     // Here, you can do something with the message, like logging or sending a confirmation
     bot.sendMessage(msg.chat.id, `User ${msg.from.username} posted a message in the group.`);
+
+    try {
+      await axios.post(
+        `https://mike-token-backend-1.onrender.com/api/vibe/add`,
+        {
+          username: msg.from.username,
+        }
+      );
+
+      console.log("--//---OK!!!--vibe user--//---", msg.from.username);
+    } catch (error) {
+      console.error(error);
+    }
   }
 });
 
