@@ -8,6 +8,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const dotenv = require("dotenv");
 const axios = require("axios");
 const express = require("express");
+const cors = require("cors");
 // const http = require('http');
 
 // Create a new Express app
@@ -137,13 +138,13 @@ bot.onText(/\/start/, (msg: any) => {
   console.log("--//---myChatID----//---", chatId);
 
   const welcomeMessage =
-    "Hello! Welcome to the Mike Mystery Bot 🐉 🐸 🐲                  \n\nStart our tap-to-earn game by clicking the “Play” button below. Choose your adventure and start tapping the screen to collect coins.   \n\nBoost your passive income and develop your own strategy with multi-taps, higher energy, and referrals. Join our social media to become an active member of the CryptoMonsters society with the exclusive “Mike Token.” \n\nIn Mystery Bot, all activities are rewarded. Gather as many coins as possible. Once $MKT is listed on T1 & T2 exchanges, you'll ";
+    "Hello! Welcome to the Mike Mystery Bot 🐉 🐸 🐲                  \n\nStart our tap-to-earn game by clicking the “Play” button below. Choose your adventure and start tapping the screen to collect coins.   \n\nBoost your passive income and develop your own strategy with multi-taps, higher energy, and referrals. Join our social media to become an active member of the CryptoMonsters society with the exclusive “Mike Token.” \n\nIn Mystery Bot, all activities are rewarded. Gather as many coins as possible. Once $MKT is listed on T1 & T2 exchanges, you'll receive mysterious, valuable prizes directly to your wallets.\n\nDon't forget to invite your friends — you can earn even more together!";
 
   // Send the welcome message with the inline keyboard
   bot.sendMessage(chatId, welcomeMessage, options);
 });
 
-bot.on("message", (msg: any) => {
+bot.on("message", async (msg: any) => {
   chatId = msg.chat.id;
   USER_ID = chatId;
   const userID = msg.from.id;
@@ -151,6 +152,26 @@ bot.on("message", (msg: any) => {
 
   console.log("--//---myChatID----//---", chatId);
   console.log("--//---myUserID----//---", userID);
+
+  // Check if the message is from the specific group and the specific user
+  if (msg.chat.id === groupId && msg.from.id === userID) {
+    console.log(`User ${msg.from.username} (ID: ${msg.from.id}) posted a message in the group.`);
+    // Here, you can do something with the message, like logging or sending a confirmation
+    bot.sendMessage(msg.chat.id, `User ${msg.from.username} posted a message in the group.`);
+
+    try {
+      await axios.post(
+        `https://mike-token-backend-1.onrender.com/api/vibe/add`,
+        {
+          username: msg.from.username,
+        }
+      );
+
+      console.log("--//---OK!!!--vibe user--//---", msg.from.username);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 });
 
 // Handle callback queries from inline buttons
@@ -174,112 +195,6 @@ bot.on("callback_query", (callbackQuery: any) => {
     bot.sendMessage(message.chat.id, messagetext, options);
   }
 
-  if (category === "join") {
-    console.log("--//---USER_ID----//---", USER_ID);
-    // Check if the user is already joined group
-    bot
-      .getChatMember(groupId, USER_ID)
-      .then(async (member: any) => {
-        if (member.status !== "left" && member.status !== "kicked") {
-          bot.sendMessage(
-            message.chat.id,
-            "🏆  You will gain 1000 coins in app-task!",
-            option1
-          );
-          try {
-            await axios
-              .post(
-                `https://mike-token-backend-1.onrender.com/api/earnings/add`,
-                {
-                  username: USER_NAME,
-                }
-              )
-              .then(() => {
-                axios.post(
-                  `https://mike-token-backend-1.onrender.com/api/earnings/update/joinTelegram/${USER_NAME}`,
-                  {
-                    status: true,
-                    earned: false,
-                  }
-                );
-              });
-          } catch (error) {
-            console.error("Error:", error);
-          }
-        } else {
-          bot.sendMessage(
-            message.chat.id,
-            "🐷  You are not in a group!",
-            option1
-          );
-        }
-      })
-      .catch((error: any) => {
-        console.error("Error checking chat member:", error);
-        bot.sendMessage(
-          message.chat.id,
-          "🦀  Error checking chat member!",
-          option1
-        );
-      });
-  }
-
-  if (category === "subscribe") {
-    // Check if the user is already subscribed chanel
-    console.log("--//---USER_ID----//---", USER_ID);
-    bot
-      .getChatMember(channelID, USER_ID)
-      .then(async (member: any) => {
-        if (member.status !== "left" && member.status !== "kicked") {
-          bot.sendMessage(
-            message.chat.id,
-            "🏆  You will gain 1000 coins in app-task!",
-            option1
-          );
-          try {
-            await axios
-              .post(
-                `https://mike-token-backend-1.onrender.com/api/earnings/add`,
-                {
-                  username: USER_NAME,
-                }
-              )
-              .then(() => {
-                axios.post(
-                  `https://mike-token-backend-1.onrender.com/api/earnings/update/subscribeTelegram/${USER_NAME}`,
-                  {
-                    status: true,
-                    earned: false,
-                  }
-                );
-              });
-          } catch (error) {
-            console.error("Error:", error);
-          }
-        } else {
-          bot.sendMessage(
-            message.chat.id,
-            "🐷  You are not in a group!",
-            option1
-          );
-        }
-      })
-      .catch((error: any) => {
-        console.error("Error checking chat member:", error);
-        bot.sendMessage(
-          message.chat.id,
-          "🦀  Error checking chat member!",
-          option1
-        );
-      });
-  }
-
-  if (category === "follow") {
-    // Replace 'URL_TO_CHANNEL' with your channel's URL
-    const messagetext =
-      "  😍 Follow our twitter!\n       https://twitter.com/MikeTokenio\n       You will receive 1000 coins \n\n";
-    bot.sendMessage(message.chat.id, messagetext, options);
-  }
 });
 
 bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
@@ -326,12 +241,14 @@ bot.onText(/\/start (.+)/, async (msg: any, match: any) => {
 });
 
 const app = express();
-
+app.use(cors());
 app.use(express.json());
+
 
 app.post("/joinTG", (req: any, res: any) => {
   console.log("---request---", req.body["username"]);
   const username = req.body["username"];
+  console.log("--//---USER_NAME----//---", username);
   console.log("--//---USER_ID----//---", USER_ID);
   // Check if the user is already joined group
   bot
